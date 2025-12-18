@@ -1,0 +1,13 @@
+# This file tells GitLab what to do when code is pushed
+
+stages:
+  - test
+
+secret_scan:
+  stage: test
+  script:
+    - echo "🔍 Starting secret scan with TruffleHog..."
+    - docker run --rm -v $(pwd):/src trufflesecurity/trufflehog:latest git file:///src --only-verified --json
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push"  # Run on every push
+  allow_failure: false  # If secrets found, FAIL the pipeline
